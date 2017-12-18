@@ -1,0 +1,123 @@
+.placeGridColumns( @counter , @gridColumns ) when ( @counter > 0 ){
+    @Selector : e(%("%dn - %d" , @gridColumns , ( @gridColumns - @counter ) ) ); 
+    &:nth-child( @{Selector} ){
+        left : e(%("%din" , @counter - 1 ) );
+    };
+    .placeGridColumns( @counter - 1, @gridColumns);    
+}
+
+.placeGridRows( @counter , @gridRows ) when ( @counter > 0){
+    @SelectorMin : e( %("n + %d" , (@counter * @gridRows) + 1 ) );
+    @SelectorMax : e( %("-n + %d" , (@counter * @gridRows) + @gridRows ) );
+    &:nth-child(@{SelectorMin}){
+        &:nth-child(@{SelectorMax}) {
+            top: e( %("%din" , @counter ) );
+        }
+    }
+    .placeGridRows( @counter - 1 , @gridRows );
+}
+
+.placeGridColumnWallsV( @counter , @gridColumns , @leftOffset : 0 ) when ( @counter > 0 ){
+    @Selector : e(%("%dn - %d" , @gridColumns , ( @gridColumns - @counter ) ) ); 
+    &:nth-child( @{Selector} ){
+        left : e(%("%din" , @counter - 1.12 + @leftOffset ) );
+    };
+    .placeGridColumnWallsV( @counter - 1, @gridColumns , @leftOffset );    
+}
+.placeGridRowsWallsV( @counter , @gridRows ) when ( @counter > -1){
+    @SelectorMin : e( %("n + %d" , (@counter * @gridRows) + 1 ) );
+    @SelectorMax : e( %("-n + %d" , (@counter * @gridRows) + @gridRows ) );
+    &:nth-child(@{SelectorMin}){
+        &:nth-child(@{SelectorMax}) {
+            top: e( %("%din" , @counter - 0.15 ) );
+        }
+    }
+    .placeGridRowsWallsV( @counter - 1 , @gridRows );
+}
+
+
+.placeGridColumnWallsH( @counter , @gridColumns , @leftOffset : 0 ) when ( @counter > 0 ){
+    @Selector : e(%("%dn - %d" , @gridColumns , ( @gridColumns - @counter ) ) ); 
+    &:nth-child( @{Selector} ){
+        left : e(%("%din" , @counter - .62 + @leftOffset ) );
+    };
+    .placeGridColumnWallsH( @counter - 1, @gridColumns , @leftOffset );    
+}
+.placeGridRowsWallsH( @counter , @gridRows, @muliplyer : 1, @offset : -0.65 ) when ( @counter > -1){
+    @SelectorMin : e( %("n + %d" , (@counter * @gridRows) + 1 ) );
+    @SelectorMax : e( %("-n + %d" , (@counter * @gridRows) + @gridRows ) );
+    &:nth-child(@{SelectorMin}){
+        &:nth-child(@{SelectorMax}) {
+            top: e( %("%din" , ( @counter * @muliplyer ) + @offset ) );
+        }
+    }
+    .placeGridRowsWallsH( @counter - 1 , @gridRows , @muliplyer , @offset );
+}
+
+.rec2x10 {
+    .cube {
+        .placeGridColumns( 2 , 2 ); 
+        .placeGridRows(10 , 2 );    
+    }
+}
+.rec4x100 {
+    .cube {
+        .placeGridColumns( 4 , 4 ); 
+        .placeGridRows(100 , 4 );    
+    }
+}
+.square8 {
+    
+    .cube {
+        .placeGridColumns( 8 , 8 ); 
+        .placeGridRows(8 , 8 );    
+    }
+    .verticalwall {
+        .placeGridColumnWallsV( 9 , 9 );
+        .placeGridRowsWallsV( 8 , 9 );
+    }
+    .horizontalwall {
+        .placeGridColumnWallsH( 8 , 8 );
+        .placeGridRowsWallsH( 9 , 8  );
+    }
+
+}
+.wall1x100 {
+    .horizontalwall {
+        .placeGridColumnWallsH( 1 , 1 , 1 );
+        .placeGridRowsWallsH( 100 , 1 ,  0.3 , 0);
+    }
+}
+
+.cube {
+    width: 1in;
+    height: 1in;
+    border: 0.01in solid black;
+    position: absolute;
+    background-position: 0 0;
+    background-size: 100% 100%;
+    &.highlighed {
+        border : 0.01in solid #444444;
+        background-color: white;
+        opacity: 0.8;
+    }
+    
+    
+}
+.rotate90 {
+   transform: rotate(90deg);
+}
+.rotate180 {
+    transform: rotate(180deg);
+}
+.rotate270 {
+    transform: rotate(270deg);
+}
+.walltoolbox {
+    .horizontalwall {
+        border : 0.05in solid #000000;
+        &.highlighed {
+            border : 0.05in solid #a59268;
+        }
+    }
+}

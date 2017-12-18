@@ -1,0 +1,8 @@
+version: '3'
+services:
+  web:
+    image : tholum/slim
+    ports:
+    - "80:80"
+    volumes:
+    - c:\Users\pytho\Dropbox\DM Tools (1)\Tims Custom Tiles\gridbuilder:/var/www/html

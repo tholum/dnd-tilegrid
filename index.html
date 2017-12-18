@@ -1,0 +1,115 @@
+<html>
+<header>
+    <link rel="stylesheet/less" type="text/css" href="less/grid.less" />
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/knockout/dist/knockout.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
+    <script src="bower_components/less/dist/less.min.js"></script>
+    <script src="js/cubeGrid.js"></script>
+    <style>
+        
+        .box {
+            left: .25in;
+            top : .25in;
+            position: fixed;
+            width: 8in;
+            height: 8in;
+            overflow: hidden;
+        }
+        
+        .verticalwall , .horizontalwall {
+            width : .25in;
+            height : 1.3in;
+            
+            background-size: 100% 100%;
+            position: absolute;
+        }
+        .horizontalwall {
+            transform: rotate(90deg);
+        }
+        .cubesearch {
+            position : absolute;
+            left: 9in;
+            top: 0.25in;
+        }
+        .cubetoolbox {
+            position: absolute;
+            left : 9in;
+            width: 4.3in;
+            height: 4in;
+            top : .75in;
+            overflow-y: scroll;
+        
+        }
+        .walltoolbox {
+            position: absolute;
+            left : 9in;
+            top: 5in;
+            width: 4.3in;
+            height: 4in;
+            overflow-y: scroll;
+        }
+        @media print {
+            .noprint {
+                display : none !important;
+            }
+        }
+        
+    </style>
+</header>
+
+<body>
+    <!-- Span's are to keep the nth-child math working -->
+    <div class="box square8 ">
+        <span class="basecubes">
+            <!-- ko foreach : cubes() -->
+            <div class="cube droppable" 
+                data-bind="
+                    style : { 
+                        backgroundImage : 'url( ' + background() + ')',
+                         transform: 'rotate( ' + rotation() + 'deg )'
+                    } , 
+                    click : function(){click()},
+                    event: { contextmenu: function(){rightClick(); } }"></div>
+            <!-- /ko -->
+        </span>
+        <span class="verticalwalls">
+        <!-- ko foreach : verticalWalls() -->
+            <div class="verticalwall droppable" data-bind="style : { backgroundImage : 'url( ' + background() + ' )'} , click : function(){click()}"></div>
+        <!-- /ko -->
+        </span>
+        <span class="horizontalwalls">
+            <!-- ko foreach : horizantalWalls() -->
+            <div class="horizontalwall droppable" data-bind="style : { backgroundImage : 'url( ' + background() + ')'} , click : function(){click()}"></div>
+            <!-- /ko -->
+        </span>
+    </div>
+    <input class="cubesearch noprint" data-bind="value : cubeSearch , valueUpdate : 'keyup'" >
+    <div class="cubetoolbox rec4x100 noprint">
+        <!-- ko foreach : filteredCubes() -->
+            <div 
+            class="cube draggable" 
+            data-bind="
+                click : function(){ $parent.cubeBrush( $data ); }, 
+                attr : {'data-style' : $data } , 
+                style : { backgroundImage : 'url( ' + $data + ')'},
+                css : { highlighed : $data == $parent.cubeBrush() }"></div>
+        <!-- /ko -->
+    </div>
+    <div class="walltoolbox wall1x100 noprint">
+        <!-- ko foreach : wallStyles() -->
+         <div class="horizontalwall draggable" data-bind="
+                        click : function(){ $parent.wallBrush( $data ); }, 
+                        attr : {'data-style' : $data } , 
+                        style : { backgroundImage : 'url( ' + $data + ' )'},
+                        css : { highlighed : $data == $parent.wallBrush() }"></div>
+        <!-- /ko -->
+    </div>
+
+</body>
+<script >
+   
+    var mainGrid = new CubeGrid();
+    ko.applyBindings(mainGrid);
+</script>
+</html>
