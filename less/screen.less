@@ -1,0 +1,55 @@
+@media screen {
+    @menuBaseColor : #0099ff;
+    @menuTextColor : #ffffff;
+    @cubeGridMenuColor : rgb(252, 129, 29);
+    .box {
+        position: absolute;
+    }
+    .menubar {
+        position: relative;
+        top: 0;
+        left : 0;
+        height: 30px;
+        width: 100%;
+        background-color:  @menuBaseColor;
+        .item {
+            color : @menuTextColor;
+            height : 30px;
+            line-height: 30px;
+            vertical-align: middle;
+            font-size : 16px;
+            padding-left: 7px;
+            padding-right: 7px;
+            .fa {
+                margin-right: 7px;
+            }
+            border-right : 1px solid @menuTextColor;
+            display: inline-block;
+            &:hover{
+                color : rgb(179, 225, 255);
+            }
+        }
+    }
+    body , html {
+        margin: 0px;
+        padding: 0px;
+    }
+    .cubepacks {
+        position: absolute;
+        left: 8.5in;
+        top: 30px;
+        .cubepack {
+            width : 1.5in;
+            height: 30px;
+            font-size: 16px;
+            line-height: 30px;
+            vertical-align: middle;
+            padding-left: 7px;
+            background-color: lighten( @cubeGridMenuColor , 10% );
+            color : @menuTextColor;
+            &.selected {
+                background-color: @cubeGridMenuColor;
+            }
+        }
+    }
+}

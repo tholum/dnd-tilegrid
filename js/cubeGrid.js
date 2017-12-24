@@ -12,6 +12,12 @@ var ColorCube = function (info, parent) {
     self.click = function () {
         self.background(parent.cubeBrush() );
     }
+    self.toJson = function () {
+        return {
+            "background": self.background(),
+            "orientation": self.orientation
+        };
+    }
 }
 var Wall = function( info , parent ){
     var self = this;
@@ -21,12 +27,78 @@ var Wall = function( info , parent ){
     self.click = function () {
         self.background(parent.wallBrush());
     }
+    self.toJson = function(){
+        return {
+            "background" : self.background(),
+            "orientation": self.orientation
+        };
+    }
+}
+var CubePack = function(pack ){
+    if (typeof pack !== "object" || pack === null) {
+        pack = {};
+    }
+    var self = this;
+    self.name = ko.observable(pack.name);
+    self.cubes = ko.observableArray([]);
+    if (pack.hasOwnProperty("cubes")) {
+        self.cubes(pack.cubes);
+    }
+}
+var WallPack = function( pack ){
+    if( typeof pack !== "object" || pack === null ){
+        pack = {};
+    }
+    self = this;
+    self.name = ko.observable(pack.name);
+    self.walls = ko.observableArray([]);
+    if( pack.hasOwnProperty("walls") ){
+        self.walls( pack.walls);
+    }
 }
 var CubeGrid = function () {
     var self = this;
+    self.wallPacks = ko.observableArray( [
+        new WallPack({
+            "name": "Simple Stone", 
+            "walls": [
+                'walls/none.png',
+                'walls/stone-full-basic.png',
+                'walls/stone-full-door.png',
+                'walls/stone-full-largedoor.png',
+                'walls/stone-full-largedoor-right.png']
+            } ) ]
+    );
+    self.wallPack = ko.observable( self.wallPacks()[0]);
+    self.wallStyles = ko.computed( function(){
+        var wp = self.wallPack();
+        var walls = [];
+        if( typeof wp == "object" && wp !== null ){
+            walls = wp.walls();
+        }
+        return walls;
+    });
+    self.cubePacks = ko.observableArray([]);
+    self.cubePack = ko.observable();
+    self.cubeStyles = ko.computed(function(){
+        var wp = self.cubePack();
+        var cubes = [];
+        if (typeof wp == "object" && wp !== null) {
+            cubes = wp.cubes();
+        }
+        return cubes;
+    });
+
+    self.print = function(){
+        window.print();
+    }
     self.cubeBrush = ko.observable('squares/cobblestone-grey-0.png');
+    self.iconPacks = ko.observableArray([]);
     self.wallBrush = ko.observable('wall1');
-    var tmpCubeTypes = [
+    
+    self.cubePacks.push(new CubePack( {
+        "name" : "Default Misc",
+        "cubes" : [
         'squares/wood-boards-2-runner.png', 
         'squares/brick-grey-1.png',
         'squares/pavingblock-medium-grey-0.png', 
@@ -35,26 +107,36 @@ var CubeGrid = function () {
         'squares/wood-floor-light-grey0.png',
         'squares/hay-barn0.png',
         'squares/hay-barn1.png',
-    ];
-    
+        'squares/water0.png'
+    ] } ) );
+    self.cubePack( self.cubePacks()[0]);
     var x = 0;
+    var redstone = [];
+    var blackstone = [];
+    var woodgrainDark = [];
     while( x < 63 ){
-        tmpCubeTypes.push('squares/redstone' + x +'.png');
-        tmpCubeTypes.push('squares/stone-black-' + x + '.png' );
+        redstone.push('squares/redstone' + x +'.png');
+        blackstone.push('squares/stone-black-' + x + '.png' );
         x++;
     }
     x = 0;
     while (x < 34) {
-        tmpCubeTypes.push('squares/woodgrain-dark' + x +'.png');
+        woodgrainDark.push('squares/woodgrain-dark' + x +'.png');
         x++;
     }
-    self.cubeStyles = ko.observableArray(tmpCubeTypes);
-    self.wallStyles = ko.observableArray([ 
-        'walls/none.png' , 
-        'walls/stone-full-basic.png' ,
-        'walls/stone-full-door.png' , 
-        'walls/stone-full-largedoor.png',
-        'walls/stone-full-largedoor-right.png' ]);
+    self.cubePacks.push(new CubePack({
+        "name": "Red Stone",
+        "cubes": redstone
+    }));
+    self.cubePacks.push(new CubePack({
+        "name": "Black Stone",
+        "cubes": blackstone
+    }));
+    self.cubePacks.push(new CubePack({
+        "name": "Dark Woodgrain",
+        "cubes": woodgrainDark
+    }));
+    
     self.cubeSearch = ko.observable("");
     self.cubes = ko.observableArray([]);
     self.filteredCubes = ko.computed(function(){
@@ -87,6 +169,33 @@ var CubeGrid = function () {
         self.walls.push( new Wall({"background" : "none" , "orientation" :"v" } , self ));
         self.walls.push(new Wall({ "background": "none", "orientation": "h" }, self));
         i++;
+    }
+    self.save = function () {
+        var info = {"cubes" : [] , "walls" : [] };
+        self.cubes().forEach( function( c ){
+            info.cubes.push( c.toJson() );
+        });
+        self.walls().forEach( function(w){
+            info.walls.push( w.toJson() );
+        });
+        var saveText = JSON.stringify(info);
+        download(saveText, "mymap.gridview", "text/json");
+    }
+    self.load = function( data ){
+        var newCubes = [];
+        var newWalls = [];
+        if( data.hasOwnProperty("cubes") ){
+            data.cubes.forEach( function( cube ){
+                newCubes.push(new ColorCube(cube, self));
+            });
+            self.cubes( newCubes );
+        }
+        if (data.hasOwnProperty("walls")) {
+            data.walls.forEach(function (wall) {
+                newWalls.push(new Wall(wall, self));
+            });
+            self.walls(newWalls);
+        }
     }
 }
 ko.bindingHandlers.draggable = {
