@@ -58,6 +58,7 @@ var WallPack = function( pack ){
 }
 var CubeGrid = function () {
     var self = this;
+    self.toolboxSelect = ko.observable('tiles');
     self.wallPacks = ko.observableArray( [
         new WallPack({
             "name": "Simple Stone", 

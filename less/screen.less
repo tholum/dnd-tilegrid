@@ -52,4 +52,44 @@
             }
         }
     }
+    .cubepacksaccordian {
+        position: absolute;
+        right: 0in;
+        width: 4.5in;
+        .cubepack {
+            width : 1.5in;
+            height: 30px;
+            font-size: 16px;
+            line-height: 30px;
+            vertical-align: middle;
+            padding-left: 7px;
+            background-color: lighten( @cubeGridMenuColor , 10% );
+            color : @menuTextColor;
+            &.selected {
+                background-color: @cubeGridMenuColor;
+            }
+        }
+        .panel-collapse {
+            max-height: 3in;
+            overflow: auto;
+        }
+        
+    }
+    .editview {
+        position: absolute;
+        right: 0in;
+        width: 5in;
+        .cubepacksaccordian {
+            position: relative;
+            width: 100%;
+        }
+        .panel-collapse { 
+            position: relative;
+            width: 100%;
+        }
+    }
+}
+
+.dropdown-menu {
+    z-index : 1050 !important;
 }

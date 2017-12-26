@@ -101,8 +101,36 @@
         background-color: white;
         opacity: 0.8;
     }
+}
+.wallfloat {
+    width : .25in;
+    height : 1.3in;
+    background-size: 100% 100%;
+    position: relative;
+    display: inline-block;
+    transform: rotate(90deg);
     
-    
+        left: .65in;
+    top: -.65in;
+     &.highlighed {
+        border : 0.01in solid #444444;
+        background-color: white;
+        opacity: 0.8;
+    }
+}
+.cubefloat {
+    height: 1in;
+    width: 1in;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+        background-position: 100% 100%;
+    background-size: 100%;
+    &.highlighed {
+        border : 0.01in solid #444444;
+        background-color: white;
+        opacity: 0.8;
+    }
 }
 .rotate90 {
    transform: rotate(90deg);
