@@ -1,0 +1,129 @@
+<html>
+<header>
+    <link rel="stylesheet/less" type="text/css" href="less/grid.less" />
+    <link rel="stylesheet/less" type="text/css" href="less/print.less" />
+    <link rel="stylesheet/less" type="text/css" href="less/screen.less" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rell="stylesheet" type="text/css" href="bower_components/toolbar/jquery.toolbar.css" />
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/knockout/dist/knockout.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
+    <script src="bower_components/less/dist/less.min.js"></script>
+    <script src="js/cubeGrid.js"></script>
+    <script src="js/download.js"></script>
+    <style>
+        
+        
+        
+       
+        @media print {
+            .noprint {
+                display : none !important;
+            }
+        }
+        .hidden {
+            display : none;
+        }
+        
+    </style>
+</header>
+
+<body>
+    <div class="menubar noprint">
+        
+        <div class="item" data-bind="click : function(){print();}"><i class="fa fa-print" aria-hidden="true"></i>Print</div>
+        <label for="GridviewUploader" ><div class="item" ><i class="fa fa-upload" aria-hidden="true"></i>Upload </div></label>
+        <div class="item" data-bind="click : function(){save();}">
+            <i class="fa fa-download" aria-hidden="true"></i>Download
+        </div>
+        <input style="visibility  :hidden" type="file" name="File Upload" id="GridviewUploader" accept=".gridview" />
+    </div>
+    <!-- Span's are to keep the nth-child math working -->
+    <div class="box square8 ">
+        <span class="basecubes">
+            <!-- ko foreach : cubes() -->
+            <div class="cube droppable" 
+                data-bind="
+                    style : { 
+                        backgroundImage : 'url( ' + background() + ')',
+                         transform: 'rotate( ' + rotation() + 'deg )'
+                    } , 
+                    click : function(){click()},
+                    event: { 
+                        contextmenu: function(){rightClick(); } ,
+                         mouseover: function( me , e ){ 
+                             if(e.buttons == 1 || e.buttons == 3){ click(); }
+                         },
+                         mousedown : function(){ click(); }
+                    }"></div>
+            <!-- /ko -->
+        </span>
+        <span class="verticalwalls">
+        <!-- ko foreach : verticalWalls() -->
+            <div class="verticalwall droppable" data-bind="style : { backgroundImage : 'url( ' + background() + ' )'} , click : function(){click()}"></div>
+        <!-- /ko -->
+        </span>
+        <span class="horizontalwalls">
+            <!-- ko foreach : horizantalWalls() -->
+            <div class="horizontalwall droppable" data-bind="style : { backgroundImage : 'url( ' + background() + ')'} , click : function(){click()}"></div>
+            <!-- /ko -->
+        </span>
+    </div>
+    <div class="cubepacks noprint">
+        <!-- ko foreach :  cubePacks() -->
+        <div class="cubepack" data-bind=" css : { 'selected' : $parent.cubePack() == $data },text : name , click : function(){$parent.cubePack( $data );}" ></div>
+        <!-- /ko -->
+    </div>
+    <div class="cubetoolbox rec4x100 noprint">
+        <!-- ko foreach : filteredCubes() -->
+            <div 
+            class="cube draggable" 
+            data-bind="
+                click : function(){ $parent.cubeBrush( $data ); }, 
+                attr : {'data-style' : $data } , 
+                style : { backgroundImage : 'url( ' + $data + ')'},
+                css : { highlighed : $data == $parent.cubeBrush() }"></div>
+        <!-- /ko -->
+    </div>
+    <div class="walltoolbox wall1x100 noprint">
+        <!-- ko foreach : wallStyles() -->
+         <div class="horizontalwall draggable" data-bind="
+                        click : function(){ $parent.wallBrush( $data ); }, 
+                        attr : {'data-style' : $data } , 
+                        style : { backgroundImage : 'url( ' + $data + ' )'},
+                        css : { highlighed : $data == $parent.wallBrush() }"></div>
+        <!-- /ko -->
+    </div>
+
+</body>
+<script >
+   
+    var mainGrid = new CubeGrid();
+    ko.applyBindings(mainGrid);
+
+     $(document).ready(function () {
+            document.getElementById('GridviewUploader').addEventListener('change', upload, false);
+            function browserSupportFileUpload() {
+                var isCompatible = false;
+                if (window.File && window.FileReader && window.FileList && window.Blob) {
+                    isCompatible = true;
+                }
+                return isCompatible;
+            }
+            function upload(evt) {
+                if (!browserSupportFileUpload()) {
+                    alert('The File APIs are not fully supported in this browser!');
+                } else {
+                    var data = null;
+                    var file = evt.target.files[0];
+                    var reader = new FileReader();
+                    reader.readAsText(file);
+                    reader.onload = function (event) {
+                        var gridviewData = event.target.result;
+                        mainGrid.load( JSON.parse( gridviewData ) );
+                    };
+                }
+            }
+        });
+</script>
+</html>

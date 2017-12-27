@@ -44,6 +44,9 @@ var CubePack = function(pack ){
     if (pack.hasOwnProperty("cubes")) {
         self.cubes(pack.cubes);
     }
+    self.download = function(){
+        download( JSON.stringify( { "cubepacks" : [ { name : self.name() , cubes : self.cubes() } ] } ) , self.name() + ".gridpack", "text/json");
+    }
 }
 var WallPack = function( pack ){
     if( typeof pack !== "object" || pack === null ){
@@ -59,6 +62,7 @@ var WallPack = function( pack ){
 var CubeGrid = function () {
     var self = this;
     self.toolboxSelect = ko.observable('tiles');
+    self.page = ko.observable('grid-editor');
     self.wallPacks = ko.observableArray( [
         new WallPack({
             "name": "Simple Stone", 
@@ -81,6 +85,15 @@ var CubeGrid = function () {
     });
     self.cubePacks = ko.observableArray([]);
     self.cubePack = ko.observable();
+    self.addCube = function( url ){
+        var cp = self.cubePack();
+        if( cp && typeof cp == "object" && cp !== null && cp.hasOwnProperty('cubes') ){
+            cp.cubes.push( url );
+        }
+    }
+    self.addCubepack = function(){
+        self.cubePacks.push(new CubePack({ 'name': 'New Gridpack', 'cubes': [] }) );
+    }
     self.cubeStyles = ko.computed(function(){
         var wp = self.cubePack();
         var cubes = [];
@@ -185,6 +198,13 @@ var CubeGrid = function () {
     self.load = function( data ){
         var newCubes = [];
         var newWalls = [];
+        if (data.hasOwnProperty("cubepacks") ){
+            if( Array.isArray( data.cubepacks ) ){
+                data.cubepacks.forEach( function( cubePack){
+                    self.cubePacks.push(new CubePack(cubePack ));
+                });
+            }
+        }
         if( data.hasOwnProperty("cubes") ){
             data.cubes.forEach( function( cube ){
                 newCubes.push(new ColorCube(cube, self));
@@ -233,3 +253,80 @@ ko.bindingHandlers.droppable = {
         });
     }
 }
+ko.bindingHandlers.popedit = {
+    init : function( element , valueAccessor ){
+        function makeId() {
+            var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            for (var i = 0; i < 10; i++){
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+            }
+            return text;
+        }
+        var x = 100;
+        var va = ko.unwrap(valueAccessor);
+        while( typeof va == "function" && !ko.isObservable( va ) && x > 0 ){
+            va = va();
+            x--;
+        }
+        var tmpId = makeId();
+        var editName = "";
+        while( $("#modal-" + tmpId ).length !== 0 ){
+            tmpId = makeId();
+        }
+
+        $(element).attr('data-modalid', 'modal-' + tmpId );
+        var modalTemplate = $(`<div class="modal fade" id="modal-${tmpId}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          <span class="pficon pficon-close"></span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Edit ${editName}</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" data-bind="submit : function(){save();}" >
+          <div class="form-group">
+            <div class="col-sm-12">
+              <input type="text" id="textInput-modal-markup" class="form-control" data-bind="value : editValue, valueUpdate : 'keyup' " ></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bind="click : function(){ save(); }" >Save and close</button>
+      </div>
+    </div>
+  </div>
+</div>`);
+        $('body').append(modalTemplate);
+        ko.applyBindings({ editValue: va, save: function () { modalTemplate.modal('hide'); } }, modalTemplate[0])
+        $(element).dblclick( function(){
+            $('#modal-' + tmpId).modal('show');
+        } );
+    }
+}
+var templateFromUrlLoader = {
+    loadTemplate: function (name, templateConfig, callback) {
+        if (templateConfig.fromUrl) {
+            var fullUrl = 'views/' + templateConfig.fromUrl ;
+            $.get(fullUrl, function (markupString) {
+                ko.components.defaultLoader.loadTemplate(name, markupString, callback);
+            });
+        } else {
+            callback(null);
+        }
+    }
+};
+
+// Register it
+ko.components.loaders.unshift(templateFromUrlLoader);
+['grid-editor', 'cubepack-editor'].forEach(function(page){
+    ko.components.register("view-" + page , {
+        template: {
+            "fromUrl": page + '.html'
+        },
+        viewModel: { createViewModel: (params, componentInfo) => ko.dataFor(componentInfo.element) }
+    });
+});
+

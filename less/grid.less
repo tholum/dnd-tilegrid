@@ -149,6 +149,17 @@
         }
     }
 }
+.pf-mainbody {
+    height: ~"calc( 100% - 60px)";
+    width: ~"calc( 100% - 200px)";
+    position: absolute;
+    top: 60px;
+    left: 200px; 
+    &.collapsed {
+        width: ~"calc( 100% - 75px)";
+        left: 75px; 
+    }
+}
  .verticalwall , .horizontalwall {
             width : .25in;
             height : 1.3in;

@@ -1,0 +1,36 @@
+<ul class="nav nav-tabs ">
+    <!-- ko foreach : cubePacks() -->
+    <li class="active" data-bind="css : { active : $root.cubePack() == $data }">
+        <a href="#" style="text-transform: capitalize;" data-bind="text : name,popedit : name, click : function(){$root.cubePack($data);}"></a>
+    </li>
+    <!-- /ko -->
+    <li>
+        <a href="#" data-bind="click : function(){ addCubepack();}" ><i class="fa fa-plus-square" aria-hidden="true"></i>&nbsp;Add Gridpack</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="col-sm-6">
+        <div class="input-group">
+            <input type="text" class="form-control" id="imageurl" placeholder="Image URL">
+            <span class="input-group-btn">
+                <button data-bind="click : function(){addCube( $('#imageurl').val() ); }" class="btn btn-default" type="button">Add Image ( 300px x 300px Prefered )</button>
+            </span>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <!-- ko if : cubePack() -->
+            <!-- ko with : cubePack() -->
+        <button class="btn btn-default" data-bind="click : function(){ download(); }" ><i class="fa fa-download"></i> &nbsp; Download Gridpack</button>
+            <!-- /ko -->
+        <!-- /ko -->
+    </div>
+</div>
+<div class="">
+        <!-- ko foreach : cubeStyles() -->
+            <div class="cubefloat" data-bind="
+                click : function(){ console.log( $data ); }, 
+                attr : {'data-style' : $data } , 
+                style : { backgroundImage : 'url( ' + $data + ')'},
+                css : { highlighed : $data == $root.cubeBrush() }"></div>
+        <!-- /ko -->
+</div>

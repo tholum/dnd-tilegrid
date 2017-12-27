@@ -1,0 +1,88 @@
+<div class="box square8 ">
+    <span class="basecubes">
+        <!-- ko foreach : cubes() -->
+        <div class="cube droppable" data-bind="
+                    style : { 
+                        backgroundImage : 'url( ' + background() + ')',
+                         transform: 'rotate( ' + rotation() + 'deg )'
+                    } , 
+                    click : function(){click()},
+                    event: { 
+                        contextmenu: function(){rightClick(); } ,
+                         mouseover: function( me , e ){ 
+                             if(e.buttons == 1 || e.buttons == 3){ click(); }
+                         },
+                         mousedown : function(){ click(); }
+                    }"></div>
+        <!-- /ko -->
+    </span>
+    <span class="verticalwalls">
+        <!-- ko foreach : verticalWalls() -->
+        <div class="verticalwall droppable" data-bind="style : { backgroundImage : 'url( ' + background() + ' )'} , click : function(){click()}"></div>
+        <!-- /ko -->
+    </span>
+    <span class="horizontalwalls">
+        <!-- ko foreach : horizantalWalls() -->
+        <div class="horizontalwall droppable" data-bind="style : { backgroundImage : 'url( ' + background() + ')'} , click : function(){click()}"></div>
+        <!-- /ko -->
+    </span>
+</div>
+<div class="panel panel-default editview noprint">
+    <div class="panel-body">
+        <ul class="nav nav-tabs ">
+            <!-- ko foreach : ['tiles' , 'walls'] -->
+            <li class="active" data-bind="css : { active : $root.toolboxSelect() == $data }, click : function(){$root.toolboxSelect($data);}">
+                <a href="#" style="text-transform: capitalize;" data-bind=" text : $data"></a>
+            </li>
+            <!-- /ko -->
+        </ul>
+        <!-- ko if : toolboxSelect() == 'tiles' -->
+        <div id="cubepacks" class="panel-group cubepacksaccordian noprint">
+            <!-- ko foreach :  cubePacks() -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#cubepacks" data-bind="text : name ,attr : { href : '#cubepack-panel-' + String(name()).replace(' ' , '_' )} ">
+                        </a>
+                    </h4>
+                </div>
+                <div class="panel-collapse collapse" data-bind="attr : { id : 'cubepack-panel-' + String(name()).replace(' ' , '_' )}">
+                    <!-- ko foreach : cubes() -->
+                    <div class="cubefloat" data-bind="
+                                        click : function(){ $root.cubeBrush( $data ); }, 
+                                        attr : {'data-style' : $data } , 
+                                        style : { backgroundImage : 'url( ' + $data + ')'},
+                                        css : { highlighed : $data == $root.cubeBrush() }"></div>
+                    <!-- /ko -->
+                </div>
+            </div>
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+        <!-- ko if : toolboxSelect() == 'walls' -->
+        <div id="wallpacks" class="panel-group wallpacksaccordian">
+            <!-- ko foreach : wallPacks() -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#wallpacks" data-bind="text : name ,attr : { href : '#wallpacks-panel-' + String(name()).replace(' ' , '_' )} ">
+                        </a>
+                    </h4>
+                </div>
+                <div class="panel-collapse collapse" data-bind="attr : { id : 'wallpacks-panel-' + String(name()).replace(' ' , '_' )}">
+                    <!-- ko foreach : walls() -->
+                    <div style="width : 1.3in; height: .25in;">
+                        <div class="wallfloat" data-bind="
+                                        click : function(){ $root.wallBrush( $data ); }, 
+                                        attr : {'data-style' : $data } , 
+                                        style : { backgroundImage : 'url( ' + $data + ' )'},
+                                        css : { highlighed : $data == $root.wallBrush() }"></div>
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </div>
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+    </div>
+</div>

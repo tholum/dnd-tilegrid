@@ -3,8 +3,8 @@
     <link rel="stylesheet/less" type="text/css" href="less/grid.less" />
     <link rel="stylesheet/less" type="text/css" href="less/print.less" />
     <link rel="stylesheet/less" type="text/css" href="less/screen.less" />
-            <link rel="stylesheet" media="screen" href="node_modules/patternfly/dist/css/patternfly.min.css">
-            <link rel="stylesheet" href="node_modules/patternfly/dist/css/patternfly-additions.min.css">
+    <link rel="stylesheet" media="screen" href="node_modules/patternfly/dist/css/patternfly.min.css">
+    <link rel="stylesheet" href="node_modules/patternfly/dist/css/patternfly-additions.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rell="stylesheet" type="text/css" href="bower_components/toolbar/jquery.toolbar.css" />
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -84,12 +84,6 @@
             .nav-pf-vertical.collapsed .list-group-item>a>label>.list-group-item-value {
                 display: none;
             }
-            .box {
-                left : 225px;
-            }
-            .box.collapsed {
-                left : 100px;
-            }
         }
         
         
@@ -99,7 +93,7 @@
 <body>
     <nav class="noprint navbar navbar-pf-vertical">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-bind="click : function(){$('.nav-pf-persistent-secondary,.box').toggleClass('collapsed');}">
+            <button type="button" class="navbar-toggle" data-bind="click : function(){$('.nav-pf-persistent-secondary,.pf-mainbody').toggleClass('collapsed');}">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -112,7 +106,7 @@
             <ul class="nav navbar-nav navbar-left navbar-iconic navbar-utility">
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle nav-item-iconic" id="filedropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        File
+                        <i class="fa fa-folder-o" aria-hidden="true"></i>&nbsp;File
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="filedropdown">
                         <li data-bind="click : function(){ print() } ">
@@ -139,115 +133,21 @@
     </nav>
     <div class="noprint nav-pf-vertical nav-pf-vertical-with-sub-menus nav-pf-persistent-secondary ">
         <ul class="list-group">
-            <li class="list-group-item">
+            <!-- ko foreach : [
+                { 'name' : 'grid-editor' , 'icon' : 'fa-th' },
+                { 'name' : 'cubepack-editor' , 'icon' : 'fa-table'}
+            ] -->
+            <li class="list-group-item " data-bind="css : { active : $root.page() == name}, click : function(){$root.page( name );}">
                 <a  >
-                    <i class="fa fa-cubes" aria-hidden="true"></i>
-                    <span class="list-group-item-value">Grid Editor</span>
+                    <i class="fa " data-bind="css : icon" aria-hidden="true"></i>
+                    <span class="list-group-item-value" data-bind="text : String( name ).replace('-' , ' ')" ></span>
                 </a>
             </li>
+            <!-- /ko -->
         </ul>
     </div>
-<input style="visibility  :hidden" type="file" name="File Upload" id="GridviewUploader" accept=".gridview" />
-    <!-- 
-    <div class="menubar noprint">
-        
-        <div class="item" data-bind="click : function(){print();}"><i class="fa fa-print" aria-hidden="true"></i>Print</div>
-        <label for="GridviewUploader" ><div class="item" ><i class="fa fa-upload" aria-hidden="true"></i>Upload </div></label>
-        <div class="item" data-bind="click : function(){save();}">
-            <i class="fa fa-download" aria-hidden="true"></i>Download
-        </div>
-        <input style="visibility  :hidden" type="file" name="File Upload" id="GridviewUploader" accept=".gridview" />
-    </div> -->
-    <!-- Span's are to keep the nth-child math working -->
-    <div class="box square8 ">
-        <span class="basecubes">
-            <!-- ko foreach : cubes() -->
-            <div class="cube droppable" 
-                data-bind="
-                    style : { 
-                        backgroundImage : 'url( ' + background() + ')',
-                         transform: 'rotate( ' + rotation() + 'deg )'
-                    } , 
-                    click : function(){click()},
-                    event: { 
-                        contextmenu: function(){rightClick(); } ,
-                         mouseover: function( me , e ){ 
-                             if(e.buttons == 1 || e.buttons == 3){ click(); }
-                         },
-                         mousedown : function(){ click(); }
-                    }"></div>
-            <!-- /ko -->
-        </span>
-        <span class="verticalwalls">
-        <!-- ko foreach : verticalWalls() -->
-            <div class="verticalwall droppable" data-bind="style : { backgroundImage : 'url( ' + background() + ' )'} , click : function(){click()}"></div>
-        <!-- /ko -->
-        </span>
-        <span class="horizontalwalls">
-            <!-- ko foreach : horizantalWalls() -->
-            <div class="horizontalwall droppable" data-bind="style : { backgroundImage : 'url( ' + background() + ')'} , click : function(){click()}"></div>
-            <!-- /ko -->
-        </span>
-    </div>
-    <div class="panel panel-default editview noprint">
-        <div class="panel-body">
-            <ul class="nav nav-tabs ">
-                <!-- ko foreach : ['tiles' , 'walls'] -->
-                <li class="active" data-bind="css : { active : $root.toolboxSelect() == $data }, click : function(){$root.toolboxSelect($data);}">
-                    <a href="#" style="text-transform: capitalize;" data-bind=" text : $data"></a>
-                </li>
-                <!-- /ko -->
-            </ul>
-            <!-- ko if : toolboxSelect() == 'tiles' -->
-                <div id="cubepacks" class="panel-group cubepacksaccordian noprint">
-                    <!-- ko foreach :  cubePacks() -->
-                    <div class="panel panel-default"  >
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#cubepacks" data-bind="text : name ,attr : { href : '#cubepack-panel-' + String(name()).replace(' ' , '_' )} " >
-                                </a>
-                            </h4>
-                        </div>
-                        <div class="panel-collapse collapse" data-bind="attr : { id : 'cubepack-panel-' + String(name()).replace(' ' , '_' )}" >
-                        <!-- ko foreach : cubes() -->
-                        <div class="cubefloat" data-bind="
-                                        click : function(){ $root.cubeBrush( $data ); }, 
-                                        attr : {'data-style' : $data } , 
-                                        style : { backgroundImage : 'url( ' + $data + ')'},
-                                        css : { highlighed : $data == $root.cubeBrush() }"></div>
-                        <!-- /ko -->
-                        </div>
-                    </div>
-                    <!-- /ko -->
-                </div>
-            <!-- /ko -->
-            <!-- ko if : toolboxSelect() == 'walls' -->
-                <div id="wallpacks" class="panel-group wallpacksaccordian">
-                    <!-- ko foreach : wallPacks() -->
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#wallpacks" data-bind="text : name ,attr : { href : '#wallpacks-panel-' + String(name()).replace(' ' , '_' )} ">
-                                </a>
-                            </h4>
-                        </div>
-                        <div class="panel-collapse collapse" data-bind="attr : { id : 'wallpacks-panel-' + String(name()).replace(' ' , '_' )}">
-                            <!-- ko foreach : walls() -->
-                                <div style="width : 1.3in; height: .25in;" >
-                                    <div class="wallfloat" data-bind="
-                                        click : function(){ $root.wallBrush( $data ); }, 
-                                        attr : {'data-style' : $data } , 
-                                        style : { backgroundImage : 'url( ' + $data + ' )'},
-                                        css : { highlighed : $data == $root.wallBrush() }"></div>
-                                </div>
-                            <!-- /ko -->
-                        </div>
-                    </div>
-                    <!-- /ko -->
-                </div>
-            <!-- /ko -->
-        </div>
-    </div>
+<input style="visibility  :hidden" type="file" name="File Upload" id="GridviewUploader" accept=".gridview,.gridpack" />
+<div class="pf-mainbody" data-bind="component: 'view-' + page()"></div>
     
     
 
