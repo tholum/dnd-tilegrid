@@ -75,7 +75,10 @@ var CubeGrid = function () {
             ]
             } ) , 
         new WallPack( { "name" :"Villa" , "walls" : [
-            "walls/villa-full-basic.png"
+            "walls/villa-full-basic.png",
+            "walls/villa-door-basic.png",
+            "walls/villa-full-angleB-basic.png",
+            "walls/villa-full-angleT-basic.png",
         ]})
         ]
     );
