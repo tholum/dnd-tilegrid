@@ -79,6 +79,8 @@ var CubeGrid = function () {
             "walls/villa-door-basic.png",
             "walls/villa-full-angleB-basic.png",
             "walls/villa-full-angleT-basic.png",
+            "walls/villa-full-angleBR-basic.png",
+            "walls/villa-full-angleTR-basic.png"
         ]})
         ]
     );
