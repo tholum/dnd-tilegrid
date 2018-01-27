@@ -71,8 +71,13 @@ var CubeGrid = function () {
                 'walls/stone-full-basic.png',
                 'walls/stone-full-door.png',
                 'walls/stone-full-largedoor.png',
-                'walls/stone-full-largedoor-right.png']
-            } ) ]
+                'walls/stone-full-largedoor-right.png'
+            ]
+            } ) , 
+        new WallPack( { "name" :"Villa" , "walls" : [
+            "walls/villa-full-basic.png"
+        ]})
+        ]
     );
     self.wallPack = ko.observable( self.wallPacks()[0]);
     self.wallStyles = ko.computed( function(){
